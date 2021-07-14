@@ -45,7 +45,8 @@ export default {
     }
   },
   props:{
-    showContent:Boolean
+    showContent:Boolean,
+    paramStr:Object
   },
   created() {
     this.getList()
@@ -54,12 +55,15 @@ export default {
     getList() {
       var param={
         wpcontentquery:"online",
-        tag:'',
-        iid:'',
-        mn:'',
-        mid:'9396',
-        ct:'9',
-        uid:'166',
+        tag:this.paramStr.tag,
+        iid:this.paramStr.iid,
+        mn:this.paramStr.mn,
+        //mid:'9396',
+        mid:this.paramStr.mid,
+        //ct:'9',
+        ct:this.paramStr.ct,
+       // uid:'166',
+        uid:this.paramStr.uid,
         in:'',
         bd:'',
         ed:'',

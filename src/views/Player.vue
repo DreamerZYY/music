@@ -10,7 +10,11 @@
               </div>
             </div>
           </div>
+          <div class="musicrod">
+            <img :class="{'activeSing':activeSing}" src="@/assets/img/musicrod.png" />
+          </div>
         </div>
+       
         <div class="lrcContent">
            <ul ref="ulList">
               <li v-for="(item,index) in lrcContent" :dataindex="index">{{item}}</li>
@@ -85,10 +89,10 @@ export default {
             lineNo:0,
             currenLine:0,
             showMusicList:false,
-            //activeLrcClass:""
-            clicNoMusic:"7211",
+            clicNoMusic:this.paramStr.iid==""?this.paramStr.pid:this.paramStr.iid,
             playCircleStatus:0,//0:单曲循环 1：列表顺序 2：列表随机
             playCirclePic:require('../assets/img/circle.png'),
+            activeSing:false//设置属性来判断唱片杆的位置
             
         }
     },
@@ -97,12 +101,13 @@ export default {
         //列表页正在播放的index
         listcid:Number,
         orderid:Number,
-        randomid:Number
+        randomid:Number,
+        paramStr:Object
     },
     created() {
         this.getNowInfo(this.clicNoMusic)
         this.$nextTick(() => {
-            //this.playMusic();
+
         })
     },
     methods: {
@@ -113,13 +118,13 @@ export default {
                 params:{
                     wpcontentquery:"online",
                     iid:id,
-                    mid:"",
-                    cp:"wisepeak",
-                    cn:"",
-                    tag:"",
-                    mn:"",
-                    ct:"",
-                    uid:"",
+                    mid:this.paramStr.mid,
+                    cp:this.paramStr.cp,
+                    cn:decodeURI(this.paramStr.cn),
+                    tag:this.paramStr.tag,
+                    mn:this.paramStr.mn,
+                    ct:this.paramStr.ct,
+                    uid:this.paramStr.uid,
                     rn:""
                 },
                 methods:'get'
@@ -140,14 +145,13 @@ export default {
                   this.picUrl=this.baseURL+res.wpcontentlist[0].fileurl.replace("av","pic").replace("flac","jpg");
                   this.lrc=this.baseURL+res.wpcontentlist[0].fileurl.replace("av","txt").replace("flac","lrc");
                    request1({
-                      // url:this.lrc,
+                     //  url:this.lrc,
                      url:"/mock/music.lrc",
                      methods:"get"
                    }).then(res=>{
                        
                        this.lrc=res.data.split("\r\n");
                        this.filterLrcFun(res.data)
-                      // console.log(res.data);
                    })
                 }else if(res.wpcontentlist[0].ct=="10"){
                   this.picUrl=this.baseURL+res.wpcontentlist[0].thumbnail;
@@ -155,14 +159,11 @@ export default {
             })
         },
         startTouchBar(e){
-            console.log(111)
             var touch=e.touches[0];
             this.power=true;
             this.lastX=touch.clientX;
         },
-        moveTouchBar(e){
-            console.log(222)
-           
+        moveTouchBar(e){  
             var touch=e.touches[0];
             if(this.power){
                 var curX=touch.clientX;
@@ -181,7 +182,6 @@ export default {
             }
         },
         endTouchBar(e){
-            console.log(333)
             if(this.power){
                 var setW=this.$refs.progress.offsetWidth;
                 var maxW=this.$refs.silider.offsetWidth;
@@ -220,11 +220,12 @@ export default {
         },
         playAudioMusic(){
             this.$refs.playBtn.className='play_bt icon-zanting iconfont';
-            this.playSrc=require('../assets/img/pause.png')
+            this.playSrc=require('../assets/img/pause.png');
+            this.activeSing=true;
         },
         pauseAudioMusic(){
-            //this.$refs.playBtn.className='play_bt icon-bofang iconfont';
-            this.playSrc=require('../assets/img/play.png')
+            this.playSrc=require('../assets/img/play.png');
+            this.activeSing=false;
         },
         canplayMusic(){
            this.allProgress=this.duration(parseInt(this.$refs.audio.duration));
@@ -295,7 +296,6 @@ export default {
         },
         //下一首
         nextMusic(){
-                debugger;
             if(this.playCircleStatus==0||this.playCircleStatus==1){
                 this.listcid=this.orderid;
                 
@@ -307,7 +307,6 @@ export default {
         },
         //上一首
         beforeMusic(){
-            debugger;
             if(this.playCircleStatus==0||this.playCircleStatus==1){
                 this.listcid=this.orderid;
                 
@@ -344,7 +343,6 @@ export default {
                 var content=lrcics[i].replace(timeRegArr,"");
                 this.lrcContent.push(content);
                 this.filterLrc.push(timeRegArr);
-                //console.log(content)
             }
             var a=document.getElementsByClassName("lrcContent")[0];
             a.scrollTo({
@@ -392,7 +390,6 @@ export default {
             var el=document.getElementsByClassName("activeClass")[0]; 
             //算出中间行，在中间位置滚动，且保持当前的最新歌词始终在中间位置
             var middleIndex=Math.floor(parseInt(a.offsetHeight/document.getElementsByClassName("activeClass")[0].offsetHeight)/2);
-            console.log(newValue+","+oldValue);
             if(newValue>middleIndex){
                
                 var index = [].indexOf.call(el.parentElement.children, el);
@@ -409,18 +406,6 @@ export default {
         },
     },
     computed: {
-       
-      // }
-        // itemPalyNameArr() {
-        //     return this.lrc.filter(function(item){
-        //         if(isNaN(parseFloat(item.split(":")[1]))){
-        //             return item.split(":")[1].split("]")[0]
-        //         }else{
-        //             return item.split("]")[1]
-        //         }
-        //     })
-        // },
-    
     },
     mounted() {
          
@@ -488,7 +473,8 @@ body {
     /* box-shadow: -6px -5px 0px #aaa; */
     -webkit-box-shadow: #666 0px 0px 10px;
     -moz-box-shadow: #666 0px 0px 10px;
-    box-shadow: #666 0px 0px 10px;   
+    box-shadow: #666 0px 0px 10px;
+    margin-top:20px;   
 }
 .roll{
     animation: spin 10s linear infinite; 
@@ -587,9 +573,24 @@ body {
     font-size: 20px;
     flex: 1;
 }
-.picContent{
-    margin-top:20px;
+.picContent{   
     flex: 3;
+    position: relative;
+}
+.musicrod{
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 0;
+    left: calc(50% + 28px);
+    margin-top: 10px;
+}
+.musicrod img{
+    height:100%;
+    height: 100%;
+    /* transform-origin: right top; */
+    transform-origin: 30px 10px;
+    transform: rotate(-40deg);
 }
 .lrcContent{
     flex:10;
@@ -627,6 +628,9 @@ audio{
     color:#ff7471;
     font-size: 20px;
     text-shadow: 1px 4px 5px #717171;
+}
+.activeSing{
+    transform: rotate(0deg) !important;
 }
 /* .play_bt{
     background: url('../assets/img/play.png') no-repeat;
