@@ -11,13 +11,13 @@
             </div>
           </div>
           <div class="musicrod">
-            <img :class="{'activeSing':activeSing}" src="@/assets/img/musicrod.png" />
+            <img :class="{'activeSing':activeSing}" src="~assets/img/musicrod.png" />
           </div>
         </div>
        
         <div class="lrcContent">
            <ul ref="ulList">
-              <li v-for="(item,index) in lrcContent" :dataindex="index">{{item}}</li>
+              <li v-for="(item,index) in lrcContent" :dataindex="index" v-model="lrcContent[index]">{{item}}</li>
            </ul>
            <!-- {{currentLrc}} -->
         </div>
@@ -106,13 +106,9 @@ export default {
     },
     created() {
         this.getNowInfo(this.clicNoMusic)
-        this.$nextTick(() => {
-
-        })
     },
     methods: {
         getNowInfo(id) {
-            debugger;
             request({
                 url:'Module/WiseAPI/SongsAPI.ashx',
                 params:{
@@ -129,6 +125,7 @@ export default {
                 },
                 methods:'get'
             }).then(res=>{
+   
                 //this.$refs.ulList.innerHTML="";
                 this.musicInfo=res.wpcontentlist;
                 if(res.wpcontentlist[0].itemname.indexOf("-")>=0){
@@ -145,13 +142,19 @@ export default {
                   this.picUrl=this.baseURL+res.wpcontentlist[0].fileurl.replace("av","pic").replace("flac","jpg");
                   this.lrc=this.baseURL+res.wpcontentlist[0].fileurl.replace("av","txt").replace("flac","lrc");
                    request1({
-                     //  url:this.lrc,
-                     url:"/mock/music.lrc",
+                    url:this.lrc,
+                     //url:"/mock/music.lrc",
                      methods:"get"
                    }).then(res=>{
+                       if(res!=undefined){
+                        this.lrc=res.data.split("\r\n");   
+                        this.filterLrcFun(res.data); 
+                       }else{
+                           this.lrc=[];
+                            this.filterLrcFun([]); 
+                       }
                        
-                       this.lrc=res.data.split("\r\n");
-                       this.filterLrcFun(res.data)
+                       
                    })
                 }else if(res.wpcontentlist[0].ct=="10"){
                   this.picUrl=this.baseURL+res.wpcontentlist[0].thumbnail;
@@ -331,19 +334,33 @@ export default {
         //过滤生成单独的歌词数组和时间数组
         filterLrcFun(values){
             var lrc={};
-            var lrcics=values.split("\r\n");
+            var lrcics=[];
+            if(values.indexOf("\r\n")>=0){
+                lrcics=values.split("\r\n");
+            }else if(values.indexOf("\n")>=0){
+                lrcics=values.split("\n");
+            } 
+           // alert("lrcics_"+lrcics);
             var reg=/\[\d*:\d*(\.|:)\d*]/g;
             this.lrcContent=[];
             this.filterLrc=[];
-            for(var i=0;i<lrcics.length;i++){
-                var timeRegArr=lrcics[i].match(reg);
-                if(!timeRegArr){
-                    continue;
+            if(lrcics.length>0){
+                for(var i=0;i<lrcics.length;i++){
+                    var timeRegArr=lrcics[i].match(reg);
+                    if(!timeRegArr){
+                        continue;
+                    }
+                    var content=lrcics[i].replace(timeRegArr,"");
+                    if(content!=""){
+                        this.lrcContent.push(content);
+                        this.filterLrc.push(timeRegArr);
+                    }   
                 }
-                var content=lrcics[i].replace(timeRegArr,"");
-                this.lrcContent.push(content);
-                this.filterLrc.push(timeRegArr);
+            }else{
+                 this.lrcContent.push("无歌词")
             }
+            
+             //alert(this.lrcContent);
             var a=document.getElementsByClassName("lrcContent")[0];
             a.scrollTo({
                 top:0,

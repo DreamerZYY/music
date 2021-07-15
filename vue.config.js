@@ -5,6 +5,11 @@ module.exports={
     outputDir: 'dist',
     // 修改output.publishPath
     chainWebpack: config => {
+        config.module
+            .rule('images')
+            .use('url-loader')
+            .loader('url-loader')
+            .tap(options => Object.assign(options, { limit: 20000 }))
         // 添加全局scss文件
         const types = ['vue-modules', 'vue', 'normal-modules', 'normal']
         types.forEach(type => {

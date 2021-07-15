@@ -28,7 +28,6 @@ export function request(config){
     instance.interceptors.response.use(res=>{
       
         if(res.data.wpcontentquery.error==0){
-            debugger;
             return res.data.wpcontentquery;
         }else if(res.data.code=="20004"){
             alert("登录失败，请检查单位号、账户或者密码是否有误!");
@@ -48,25 +47,14 @@ export function request1(config){
     //2、axios的拦截器
     //如果有拦截器必须将数据进行返回
     instance.interceptors.request.use(config=>{
-        // console.log(config);
-    //    if(localStorage.getItem("Ticket")==null){
-    //     console.log(config)
-    //     //拦截器作用
-    //     //1、比如config中的一些信息不符合服务器的要求
-    //     //2、比如每次发送网络请求时，都希望在界面中显示一个请求的图标
-    //     //3、某些网络请求（比如登陆(token)，必须携带一些特殊的信息）
-    //     //console.log(config)
-    //     return config;   
-    //    }else{
-    //     axios.defaults.headers['token'] = localStorage.getItem('token')
-    //     return config
-    //    }
+  
         return config;
     },err=>{
       // console.log(err)
     });
     //响应拦截
     instance.interceptors.response.use(res=>{
+    
       return res;
         // if(res.data.wpcontentquery.error==0){
         //     return res.data.wpcontentquery;

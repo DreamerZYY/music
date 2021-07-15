@@ -9,7 +9,7 @@
     </p>
     <div class="ullist">
       <ul class="ulContent" ref="ulBox">
-        <li v-for="(item,index) in musicList" @click="playMusic(item.itemid,$event,index)">  
+        <li v-for="(item,index) in musicList" @click="playMusic(item.itemid,$event,index)" :class="{'playActive':item.itemid==playitem}">  
           <span class="listName">
             <span>{{index+1}}.{{item.itemname.split("-")[1]}}</span>
             <b>-{{item.itemname.split("-")[0]}}</b>
@@ -37,7 +37,7 @@ export default {
       musicName:[],
       musicAuthor:[],
       playPic:require('../assets/img/playlist1.png'),
-      playitem:'',
+      playitem:this.paramStr.iid==""?this.paramStr.pid:this.paramStr.iid,
       currentIndex:0,//实际index
       orderIndex:'',//顺序播放的index
       randomIndex:'',//循环播放的index
@@ -49,7 +49,7 @@ export default {
     paramStr:Object
   },
   created() {
-    this.getList()
+    this.getList();
   },
   methods: {
     getList() {
@@ -80,13 +80,19 @@ export default {
         params:param,
         methods:'get'
       }).then(res=>{
-        debugger;
         if(res.error=="0"){
           this.musicList=res.wpcontentlist;
           this.playList=this.musicList;
           this.filterMusic(res.wpcontentlist);
-        }
-        console.log(res);
+          //监听页面及数据渲染完成后执行的回调函数
+          this.$nextTick(() => {
+            for(var i=0;i<this.musicList.length;i++){
+                  if(this.musicList[i].itemid==this.playitem){
+                    this.$refs.ulBox.querySelectorAll("li")[i].click();
+                  }
+                }
+          });
+        }  
       })
       
     },
@@ -101,7 +107,6 @@ export default {
           window.event.cancelBubble = true;
       }
       var parent=this.$refs.ulBox;
-      debugger;
       for(var i=0;i<parent.querySelectorAll("li").length;i++){
         parent.querySelectorAll("li")[i].removeAttribute("class");
         parent.querySelectorAll("li")[i].querySelector("i").removeAttribute("class");
@@ -132,23 +137,37 @@ export default {
     
     },
     playToList(index,type){
-      debugger;
       var parent=this.$refs.ulBox;
+      var eleItemId="";
+      if(index>=0&&index<this.musicList.length){
+          eleItemId=this.playList[index].itemid;
+      }
       
-     var eleItemId=this.playList[index].itemid;
       if(this.playMusicType==1){
          if(type=="add"){
-          if(index<=this.musicList.length){
+          if(index<this.musicList.length){
             parent.querySelectorAll("li")[index].click();
+          }else{
+            parent.querySelectorAll("li")[0].click();
           }
         }else if(type=="atten"){
           if(index>=0){
             parent.querySelectorAll("li")[index].click();
+          }else{
+            parent.querySelectorAll("li")[0].click();
           }
         }   
       }else if(this.playMusicType==2){    
         if(type=="add"){
-           if(index<=this.musicList.length){
+          if(index<this.musicList.length){
+            for(var i=0;i<this.musicList.length;i++){
+              if(this.musicList[i].itemid==eleItemId){
+                parent.querySelectorAll("li")[i].click();
+                return ;
+              }
+            }
+          }else{
+            eleItemId=this.playList[0].itemid;
             for(var i=0;i<this.musicList.length;i++){
               if(this.musicList[i].itemid==eleItemId){
                 parent.querySelectorAll("li")[i].click();
@@ -157,16 +176,23 @@ export default {
             }
           }
         } else if(type=="atten"){
-           if(index>=0){
+          if(index>=0){
             for(var i=0;i<this.musicList.length;i++){
               if(this.musicList[i].itemid==eleItemId){
                 parent.querySelectorAll("li")[i].click();
                 return ;
               }
             }
+           }else{
+              eleItemId=this.playList[0].itemid;
+              for(var i=0;i<this.musicList.length;i++){
+                if(this.musicList[i].itemid==eleItemId){
+                  parent.querySelectorAll("li")[i].click();
+                  return ;
+                }
+              }
            }
-        }
-        
+        }  
       }
      
     },
@@ -177,7 +203,6 @@ export default {
       this.$emit('changShow', false);
     },
     changeListOrder(type){
-      debugger;
       if(type==1){
         this.playList=this.musicList
       }else if(type==2){
@@ -189,7 +214,6 @@ export default {
     },
     //生成随机播放列表
     shuffleSelf(array,size){
-      debugger;
       var index = -1,
       length = array.length,
       lastIndex = length - 1;
@@ -208,15 +232,12 @@ export default {
       return array;
     },
     filterMusic(data){
-      debugger;
       for(var i=0;i<data.length;i++){
         this.musicAuthor.push(data[i].itemname.split("-")[0]);
         this.musicName.push(data[i].itemname.split("-")[1]);
       }
     }
-  },
- 
-  
+  }
 }
 
 </script>
