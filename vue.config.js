@@ -9,7 +9,7 @@ module.exports={
             .rule('images')
             .use('url-loader')
             .loader('url-loader')
-            .tap(options => Object.assign(options, { limit: 20000 }))
+            .tap(options => Object.assign(options, { limit: 60000 }))
         // 添加全局scss文件
         const types = ['vue-modules', 'vue', 'normal-modules', 'normal']
         types.forEach(type => {

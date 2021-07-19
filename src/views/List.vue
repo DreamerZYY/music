@@ -143,7 +143,7 @@ export default {
           eleItemId=this.playList[index].itemid;
       }
       
-      if(this.playMusicType==1){
+      if(this.playMusicType==1||this.playMusicType==0){
          if(type=="add"){
           if(index<this.musicList.length){
             parent.querySelectorAll("li")[index].click();

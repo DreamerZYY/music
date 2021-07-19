@@ -89,6 +89,20 @@ if(iid==""){
   }
   
 }
+document.documentElement.addEventListener('touchstart', function (event) {
+  if (event.touches.length > 1) {
+    event.preventDefault();
+  }
+}, false);
+
+var lastTouchEnd = 0;
+document.documentElement.addEventListener('touchend', function (event) {
+  var now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    event.preventDefault();
+  }
+  lastTouchEnd = now;
+}, false);
 import Player from '@/views/Player'
 import List from '@/views/List'
 export default {
@@ -129,13 +143,11 @@ export default {
     },
     //接受点击播放的音频id
     sendId(res){
-      debugger;
       this.noid=res;
       this.$refs.playerref.getNowInfo(this.noid);
     },
      //接受点击播放的音频index
     sendcid(res){
-      debugger;
       this.cid=res[0];
       this.orderid=res[1];
       this.randomid=res[2];
@@ -145,12 +157,10 @@ export default {
       //this.$refs.playerref.getNowInfo(this.noid);
     },
     playToList(playIndex,str){
-      debugger;
       console.log(playIndex)
       this.$refs.playListRef.playToList(playIndex,str);
     },
     sendType(res){
-      debugger;
       this.playType=res;
       this.$refs.playListRef.changeListOrder(res);
     }

@@ -1,12 +1,16 @@
 <template>
     <div id="playContent">
-        <p class="musicTitle">{{itemname}}</p>
+        <p class="musicTitle" v-if="itemname.length>9">
+            <marquee behavior="scroll" scrollamount="5" scrolldelay="10">{{itemname}}</marquee>
+            
+        </p>
+        <p class="musicTitle" v-else>{{itemname}}</p>
         <p class="author">{{author}}</p>
         <div class="picContent">
          <div class="out ">
           <div class="roll">
               <div class="inner">
-                  <img :src="picUrl"/>   
+                  <img :src="picUrl" :onerror="defaultImg"/>   
               </div>
             </div>
           </div>
@@ -92,8 +96,8 @@ export default {
             clicNoMusic:this.paramStr.iid==""?this.paramStr.pid:this.paramStr.iid,
             playCircleStatus:0,//0:单曲循环 1：列表顺序 2：列表随机
             playCirclePic:require('../assets/img/circle.png'),
-            activeSing:false//设置属性来判断唱片杆的位置
-            
+            activeSing:false,//设置属性来判断唱片杆的位置
+            defaultImg:'this.src="' + require('../assets/img/default.jpg') + '"'
         }
     },
     props:{
@@ -129,9 +133,9 @@ export default {
                 //this.$refs.ulList.innerHTML="";
                 this.musicInfo=res.wpcontentlist;
                 if(res.wpcontentlist[0].itemname.indexOf("-")>=0){
-                  this.itemname=res.wpcontentlist[0].itemname.split("-")[0].trim();
+                  this.itemname=res.wpcontentlist[0].itemname.split("-")[1].trim();
                   //解决给audio标签设置src属性后音频不能播放的问题
-                  this.author=res.wpcontentlist[0].itemname.split("-")[1].trim();
+                  this.author=res.wpcontentlist[0].itemname.split("-")[0].trim();
                   if(this.author.indexOf(".")>=0){
                     this.author=this.author.split(".")[0];
                   }
@@ -423,6 +427,7 @@ export default {
         },
     },
     computed: {
+       
     },
     mounted() {
          
@@ -579,10 +584,12 @@ body {
     overflow: hidden;
 }
 .musicTitle{
-    font-size: 30px;
+    font-size: 4vh;
+    margin: auto;
     margin-top: 20px;
     color: #666;
-    flex:1;
+    flex: 1;
+    width: 70%;
 }
 .author{
     color:#666;
@@ -612,7 +619,7 @@ body {
 .lrcContent{
     flex:10;
     overflow: auto;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 .content-box{
     flex:2;
@@ -622,7 +629,8 @@ audio{
 }
 .playBtn{
     flex: 2;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    margin-top:10px;
 }
 .playBtn ul{
     display: flex;
