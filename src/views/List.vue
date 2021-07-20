@@ -267,7 +267,7 @@ ul,li{
   position: absolute;
   margin-left: 10%;
   border-radius: 10px 10px 0px 0px;
-  box-shadow: #666 0px 0px 10px;
+  box-shadow: #666 0px 0px 5px;
   color: #fff;
   animation:myfirst 0.2s;
   -webkit-animation:myfirst 0.2s;

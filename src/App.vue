@@ -72,7 +72,7 @@ if(iid==""){
   if(url.indexOf("mn")>=0){
     mn=url.split("mn=")[1];
     if(mn.indexOf("&")>=0){
-      mn=mn.split("&")[0]
+      mn=decodeURI(mn.split("&")[0])
     }
   }
   if(url.indexOf("mid")>=0){
@@ -174,7 +174,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #c6c6c6;
   width: 100%;
   height: 100%;
 }

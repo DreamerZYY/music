@@ -1,8 +1,7 @@
 <template>
     <div id="playContent">
         <p class="musicTitle" v-if="itemname.length>9">
-            <marquee behavior="scroll" scrollamount="5" scrolldelay="10">{{itemname}}</marquee>
-            
+            <marquee behavior="scroll" scrollamount="5" scrolldelay="10">{{itemname}}</marquee>    
         </p>
         <p class="musicTitle" v-else>{{itemname}}</p>
         <p class="author">{{author}}</p>
@@ -205,7 +204,6 @@ export default {
             this.power=false;
         },
         clickSiderBar(e){
-         
             var setW=e.clientX-e.offsetLeft;
             var maxW=this.$refs.silider.offsetWidth;
             if(setW>=0&&setW<=maxW){
@@ -235,7 +233,7 @@ export default {
             this.activeSing=false;
         },
         canplayMusic(){
-           this.allProgress=this.duration(parseInt(this.$refs.audio.duration));
+           this.allProgress=this.duration(parseInt(this.$refs.audio.duration)).replace("：",":");
             if(!this.power){
                 var prence=this.$refs.audio.currentTime/this.$refs.audio.duration;
                 this.$refs.progress.style.width=prence*100+"%";
@@ -247,7 +245,7 @@ export default {
             }
         },
         timeUpdateMusic(){
-            this.playedProgress=this.duration(parseInt(this.$refs.audio.currentTime));
+            this.playedProgress=this.duration(parseInt(this.$refs.audio.currentTime)).replace("：",":");
             var ulStr=this.$refs.ulList;
            
             for(var i=0;i<this.filterLrc.length;i++){
@@ -379,8 +377,8 @@ export default {
 
         },
         changeTime1(value){
-            var mTime=parseInt(value.split("：")[0]);
-            var sTime=parseInt(value.split("：")[1]);
+            var mTime=parseInt(value.split(":")[0]);
+            var sTime=parseInt(value.split(":")[1]);
             return mTime*60+sTime;
 
         },
@@ -520,7 +518,7 @@ body {
     position: relative;
     height: 100%;
     width: 0;
-    background-color: #71aaff;
+    background-color: #fff;
     border-radius: 2px;
 }
 .slider-dot-control{
@@ -587,12 +585,12 @@ body {
     font-size: 4vh;
     margin: auto;
     margin-top: 20px;
-    color: #666;
+    color: #c6c6c6;
     flex: 1;
     width: 70%;
 }
 .author{
-    color:#666;
+    color:#c6c6c6;
     margin-top:10px;
     font-size: 20px;
     flex: 1;
@@ -650,9 +648,9 @@ audio{
     line-height: 30px;
 }
 .activeClass{
-    color:#ff7471;
+    color: red;
     font-size: 20px;
-    text-shadow: 1px 4px 5px #717171;
+    text-shadow: 1px 1px 4px #717171;
 }
 .activeSing{
     transform: rotate(0deg) !important;
